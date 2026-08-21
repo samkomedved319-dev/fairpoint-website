@@ -1,460 +1,88 @@
-import { type FormEvent, useState } from "react";
-import {
-  ArrowRight,
-  Check,
-  ChevronDown,
-  CircleCheck,
-  Clock3,
-  FileCheck2,
-  FileText,
-  Globe2,
-  Handshake,
-  Landmark,
-  Mail,
-  Menu,
-  Scale,
-  ShieldCheck,
-  X,
-} from "lucide-react";
+import { type FormEvent, useEffect, useState } from "react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, Check, ChevronDown, Compass, Globe2, Landmark, Mail, Menu, MoveRight, Sparkles, X } from "lucide-react";
 
-const contactEmail = "info@fairpoint.sk";
-const assetPath = `${import.meta.env.BASE_URL}fairpoint-logo.png`;
-
-const navigation = [
-  { label: "Služby", href: "#sluzby" },
-  { label: "Ako pracujeme", href: "#postup" },
-  { label: "Pre koho", href: "#pre-koho" },
-  { label: "Kontakt", href: "#kontakt" },
-];
-
+const mail = "info@fairpoint.sk";
+const logo = `${import.meta.env.BASE_URL}fairpoint-logo.png`;
+const nav = [["Služby", "#sluzby"], ["Prístup", "#pristup"], ["Pre koho", "#pre-koho"], ["Kontakt", "#kontakt"]] as const;
 const services = [
-  {
-    icon: Landmark,
-    title: "Verejné obstarávanie",
-    description:
-      "Pripravíme a koordinujeme obstarávanie tak, aby bolo vecné, prehľadné a obhájiteľné v každom kroku.",
-    items: ["Príprava zákaziek", "Súťažné podklady", "Metodické poradenstvo"],
-  },
-  {
-    icon: FileCheck2,
-    title: "Projektový manažment",
-    description:
-      "Udržiavame projekty v pohybe — od zadania a harmonogramu až po kontrolu výstupov a komunikáciu tímov.",
-    items: ["Riadenie harmonogramu", "Koordinácia partnerov", "Kontrola výstupov"],
-  },
-  {
-    icon: Globe2,
-    title: "Fondy Európskej únie",
-    description:
-      "Pomáhame pripraviť kvalitný projektový zámer, zorientovať sa vo výzve a zvládnuť administratívu podpory.",
-    items: ["Projektové zámery", "Žiadosti o podporu", "Administrácia projektu"],
-  },
-];
-
-const process = [
-  {
-    number: "01",
-    title: "Zorientujeme sa v situácii",
-    text: "Na úvod si spoločne ujasníme cieľ, rozsah, termíny a riziká. Získate konkrétny pohľad na najbližší krok.",
-  },
-  {
-    number: "02",
-    title: "Navrhneme jasný postup",
-    text: "Pripravíme postup práce, zodpovednosti a dokumenty tak, aby ste mali projekt pod kontrolou od začiatku.",
-  },
-  {
-    number: "03",
-    title: "Dotiahneme veci do výsledku",
-    text: "Koordinujeme kľúčové úlohy, komunikáciu a administratívu. Vy sa môžete sústrediť na rozhodnutia, ktoré sú podstatné.",
-  },
-];
-
-const audiences = [
-  {
-    title: "Samosprávy a verejné inštitúcie",
-    text: "Pri obstarávaní, investičných zámeroch a projektoch financovaných z verejných zdrojov.",
-  },
-  {
-    title: "Organizácie a prijímatelia podpory",
-    text: "Pri príprave žiadostí, projektovom riadení a plnení povinností počas realizácie.",
-  },
-  {
-    title: "Tímy, ktoré potrebujú expertízu navyše",
-    text: "Keď potrebujete skúseného partnera na konkrétnu časť projektu alebo priebežnú metodickú podporu.",
-  },
-];
-
+  ["01", Landmark, "Verejné obstarávanie", "Od prvého zadania po uzatvorenie procesu. Strážime podklady, postup aj zrozumiteľnosť rozhodnutí.", ["Zákazky", "Súťažné podklady", "Metodika"]],
+  ["02", Compass, "Projektový manažment", "Dávame projektu rytmus. Jasné vlastníctvo úloh, fungujúca koordinácia a menej slepých miest.", ["Harmonogram", "Koordinácia", "Výstupy"]],
+  ["03", Globe2, "Fondy Európskej únie", "Meníme výzvy a nápady na kvalitne pripravené projekty s udržateľnou administratívou.", ["Projektový zámer", "Žiadosť", "Realizácia"]],
+] as const;
 const questions = [
-  {
-    question: "Kedy je vhodné ozvať sa?",
-    answer:
-      "Čím skôr, tým viac možností máme pri nastavení postupu. Ozvite sa už pri prvotnom zámere, pri príprave zákazky alebo hneď, keď potrebujete druhý odborný pohľad.",
-  },
-  {
-    question: "Pomáhate aj s konkrétnou časťou projektu?",
-    answer:
-      "Áno. Spoluprácu vieme nastaviť od jednorazovej konzultácie až po priebežnú podporu vybranej fázy projektu alebo obstarávania.",
-  },
-  {
-    question: "Ako prebieha prvá konzultácia?",
-    answer:
-      "Stručne si prejdeme váš cieľ, aktuálny stav, termíny a podklady, ktoré už máte. Následne navrhneme zrozumiteľný ďalší postup.",
-  },
-];
+  ["S čím začať, ak ešte nemáme všetky podklady?", "Práve vtedy má prvý rozhovor najväčší zmysel. Pomôžeme rozlíšiť, čo treba vyriešiť hneď, čo môže počkať a ktoré otázky rozhodnú o dobrom ďalšom kroku."],
+  ["Viete sa pripojiť aj ku konkrétnej časti projektu?", "Áno. Nevnucujeme plošné riešenie. Môžeme pomôcť s jedným rozhodnutím, konkrétnou fázou alebo nastaviť priebežnú odbornú podporu."],
+  ["Ako funguje prvá konzultácia?", "Stručne prejdeme cieľ, aktuálnu situáciu, termíny a riziká. Odchádzate s jasnejším obrazom situácie a odporúčaním, ako pokračovať."],
+] as const;
 
-function SectionIntro({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
-  return (
-    <div className="max-w-3xl">
-      <p className="eyebrow">{eyebrow}</p>
-      <h2 className="mt-4 text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl lg:text-5xl">
-        {title}
-      </h2>
-      <p className="mt-5 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">{text}</p>
-    </div>
-  );
-}
+function Marker({ number, label }: { number: string; label: string }) { return <div className="marker"><b>{number}</b><i /><span>{label}</span></div>; }
 
 export default function App() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [openQuestion, setOpenQuestion] = useState<number | null>(0);
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [faq, setFaq] = useState(0);
+  const [sent, setSent] = useState(false);
 
-  const closeMenu = () => setMobileMenuOpen(false);
+  useEffect(() => {
+    const reveal = new IntersectionObserver((entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("shown")), { threshold: 0.1 });
+    document.querySelectorAll(".reveal").forEach((item) => reveal.observe(item));
+    const progress = () => document.documentElement.style.setProperty("--progress", `${window.scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)}`);
+    progress(); window.addEventListener("scroll", progress, { passive: true });
+    return () => { reveal.disconnect(); window.removeEventListener("scroll", progress); };
+  }, []);
 
-  const submitContact = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const name = String(data.get("name") || "").trim();
-    const organization = String(data.get("organization") || "").trim();
-    const message = String(data.get("message") || "").trim();
-    const subject = `Nezáväzná konzultácia${name ? ` — ${name}` : ""}`;
-    const body = [
-      name ? `Meno: ${name}` : "",
-      organization ? `Organizácia: ${organization}` : "",
-      "",
-      message || "Dobrý deň, mám záujem o nezáväznú konzultáciu.",
-    ]
-      .filter(Boolean)
-      .join("\n");
+  function enquire(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); const data = new FormData(event.currentTarget);
+    const name = String(data.get("name") || ""); const org = String(data.get("organization") || ""); const email = String(data.get("email") || ""); const note = String(data.get("message") || "");
+    setSent(true); window.location.href = `mailto:${mail}?subject=${encodeURIComponent(`FairPoint — konzultácia / ${name}`)}&body=${encodeURIComponent(`Meno: ${name}\nOrganizácia: ${org}\nE-mail: ${email}\n\n${note}`)}`;
+  }
 
-    setFormSubmitted(true);
-    window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
+  return <div className="site">
+    <div className="progress" /><a className="skip" href="#obsah">Preskočiť na obsah</a>
+    <header className="header"><div className="width header-inner">
+      <a href="#uvod" className="brand" aria-label="FairPoint — úvod"><img src={logo} alt="FairPoint" /></a>
+      <nav className="nav" aria-label="Hlavná navigácia">{nav.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</nav>
+      <a className="nav-cta" href="#kontakt">Začať rozhovor <ArrowUpRight size={17} /></a>
+      <button className="menu" type="button" onClick={() => setMenu(!menu)} aria-label={menu ? "Zavrieť menu" : "Otvoriť menu"}>{menu ? <X /> : <Menu />}</button>
+    </div><div className={`mobile ${menu ? "open" : ""}`}><nav className="width">{nav.map(([label, href]) => <a onClick={() => setMenu(false)} key={href} href={href}>{label}<ArrowUpRight size={20} /></a>)}<a onClick={() => setMenu(false)} href="#kontakt" className="mobile-button">Poďme na to <ArrowRight size={18} /></a></nav></div></header>
 
-  return (
-    <div className="min-h-screen overflow-x-hidden bg-[#f8f8f6] text-slate-900">
-      <a className="skip-link" href="#obsah">
-        Preskočiť na obsah
-      </a>
-
-      <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-[#f8f8f6]/95 backdrop-blur">
-        <div className="page-shell flex h-20 items-center justify-between">
-          <a href="#uvod" className="flex items-center" aria-label="FairPoint — úvod">
-            <img src={assetPath} alt="FairPoint" className="h-10 w-auto object-contain" />
-          </a>
-
-          <nav className="hidden items-center gap-8 lg:flex" aria-label="Hlavná navigácia">
-            {navigation.map((item) => (
-              <a key={item.href} href={item.href} className="nav-link">
-                {item.label}
-              </a>
-            ))}
-          </nav>
-
-          <a href="#kontakt" className="button button-primary hidden lg:inline-flex">
-            Konzultovať projekt
-            <ArrowRight size={17} aria-hidden="true" />
-          </a>
-
-          <button
-            type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-slate-900 transition hover:border-slate-900 lg:hidden"
-            aria-label={mobileMenuOpen ? "Zavrieť menu" : "Otvoriť menu"}
-            aria-expanded={mobileMenuOpen}
-            onClick={() => setMobileMenuOpen((open) => !open)}
-          >
-            {mobileMenuOpen ? <X size={21} /> : <Menu size={22} />}
-          </button>
-        </div>
-
-        {mobileMenuOpen && (
-          <div className="border-t border-slate-200 bg-[#f8f8f6] lg:hidden">
-            <nav className="page-shell flex flex-col gap-1 py-5" aria-label="Mobilná navigácia">
-              {navigation.map((item) => (
-                <a key={item.href} href={item.href} onClick={closeMenu} className="mobile-nav-link">
-                  {item.label}
-                </a>
-              ))}
-              <a href="#kontakt" onClick={closeMenu} className="button button-primary mt-3 justify-center">
-                Konzultovať projekt
-                <ArrowRight size={17} aria-hidden="true" />
-              </a>
-            </nav>
+    <main id="obsah">
+      <section id="uvod" className="hero">
+        <div className="hero-grid" /><div className="orb orb-a" /><div className="orb orb-b" /><div className="noise" />
+        <div className="width hero-layout">
+          <div className="hero-copy">
+            <p className="kicker reveal"><i />VEREJNÝ ZÁUJEM / PRECÍZNA PRÁCA</p>
+            <h1 className="reveal d1">Projekty, ktoré <em>obstoja</em> aj pod tlakom.</h1>
+            <p className="lede reveal d2">Vnášame pokoj, poriadok a rozhodnosť do verejného obstarávania, projektov aj príležitostí z fondov EÚ.</p>
+            <div className="actions reveal d3"><a href="#kontakt" className="button coral">Dohodnúť konzultáciu <ArrowRight size={19} /></a><a href="#sluzby" className="text-action">Objaviť možnosti <ArrowDownRight size={19} /></a></div>
+            <div className="hero-note reveal d4"><b>01</b><span>Nie viac procesov. <strong>Viac istoty v správnom kroku.</strong></span></div>
           </div>
-        )}
-      </header>
-
-      <main id="obsah">
-        <section id="uvod" className="relative isolate overflow-hidden">
-          <div className="hero-grid absolute inset-0 -z-10 opacity-70" />
-          <div className="absolute right-[-7rem] top-16 -z-10 h-80 w-80 rounded-full bg-[#cddfce]/70 blur-3xl sm:h-[30rem] sm:w-[30rem]" />
-          <div className="page-shell grid min-h-[680px] items-center gap-14 py-16 sm:py-24 lg:grid-cols-[1.07fr_.93fr] lg:py-28">
-            <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#c8d8cb] bg-[#eff5ef] px-4 py-2 text-sm font-medium text-[#31583d]">
-                <ShieldCheck size={16} aria-hidden="true" />
-                Partner pre projekty s verejnou hodnotou
-              </div>
-              <h1 className="mt-7 text-5xl font-semibold leading-[1.03] tracking-[-0.055em] text-slate-950 sm:text-6xl lg:text-7xl">
-                Istota v rozhodnutiach. <span className="text-[#44734d]">Poriadok</span> v projektoch.
-              </h1>
-              <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
-                FairPoint pomáha pripraviť verejné obstarávanie, riadiť náročné projekty a premeniť príležitosti z fondov EÚ na kvalitne realizované výsledky.
-              </p>
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-                <a href="#kontakt" className="button button-primary justify-center sm:justify-start">
-                  Dohodnúť konzultáciu
-                  <ArrowRight size={18} aria-hidden="true" />
-                </a>
-                <a href="#sluzby" className="button button-secondary justify-center sm:justify-start">
-                  Preskúmať služby
-                </a>
-              </div>
-              <div className="mt-12 grid max-w-xl grid-cols-3 gap-5 border-t border-slate-200 pt-7">
-                <div>
-                  <p className="text-xl font-semibold text-slate-950">Jasný</p>
-                  <p className="mt-1 text-sm leading-5 text-slate-500">postup a zodpovednosti</p>
-                </div>
-                <div>
-                  <p className="text-xl font-semibold text-slate-950">Vecná</p>
-                  <p className="mt-1 text-sm leading-5 text-slate-500">komunikácia a dokumenty</p>
-                </div>
-                <div>
-                  <p className="text-xl font-semibold text-slate-950">Spoľahlivá</p>
-                  <p className="mt-1 text-sm leading-5 text-slate-500">podpora pri rozhodovaní</p>
-                </div>
-              </div>
+          <div className="constellation reveal d2" aria-label="Vizualizácia projektu v pohybe">
+            <div className="constellation-top"><span>FAIRPOINT / LIVE VIEW</span><b><i />PRIPRAVENÉ</b></div>
+            <div className="constellation-core"><div className="ring r1" /><div className="ring r2" /><div className="ring r3" /><div className="center"><Sparkles size={29} /><span>F</span></div>
+              <div className="signal s1"><i className="coral-dot" /><b>STRATÉGIA</b><small>prvý krok</small></div><div className="signal s2"><i className="lime-dot" /><b>PROCES</b><small>jasné roly</small></div><div className="signal s3"><i className="violet-dot" /><b>VÝSLEDOK</b><small>spolu v cieli</small></div>
             </div>
-
-            <div className="relative mx-auto w-full max-w-xl lg:mr-0">
-              <div className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-slate-950 p-6 shadow-[0_28px_70px_rgba(15,23,42,0.22)] sm:p-8">
-                <div className="absolute inset-x-0 top-0 h-1 bg-[#8cb68f]" />
-                <div className="flex items-center justify-between border-b border-white/15 pb-5">
-                  <span className="text-sm font-medium tracking-wide text-white/70">FAIRPOINT / PROJEKTOVÝ PREHĽAD</span>
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#a4d09b]" aria-label="Pripravené" />
-                </div>
-                <div className="py-9 sm:py-12">
-                  <p className="text-sm font-medium uppercase tracking-[0.18em] text-[#a4d09b]">Od zámeru po výsledok</p>
-                  <p className="mt-4 max-w-md text-3xl font-semibold leading-tight tracking-[-0.035em] text-white sm:text-4xl">
-                    Komplexné projekty si zaslúžia pokojný, zrozumiteľný postup.
-                  </p>
-                </div>
-                <div className="grid gap-3 border-t border-white/15 pt-5 sm:grid-cols-2">
-                  {[
-                    "Strategické nastavenie",
-                    "Transparentný proces",
-                    "Koordinované kroky",
-                    "Kontrola termínov",
-                  ].map((item) => (
-                    <div key={item} className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-3 text-sm text-white/85">
-                      <CircleCheck size={17} className="shrink-0 text-[#a4d09b]" aria-hidden="true" />
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="absolute -bottom-5 -left-5 hidden max-w-[255px] rounded-2xl border border-slate-200 bg-white p-5 shadow-xl sm:block">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#edf5ee] text-[#44734d]">
-                    <Clock3 size={20} aria-hidden="true" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">Premyslené kroky</p>
-                    <p className="text-xs text-slate-500">v správnom čase</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="border-y border-slate-200 bg-white py-7">
-          <div className="page-shell grid gap-5 text-sm text-slate-600 sm:grid-cols-3 sm:gap-8">
-            <div className="flex items-center gap-3"><Scale className="text-[#44734d]" size={20} aria-hidden="true" /><span>Rozhodnutia opierame o presné podklady.</span></div>
-            <div className="flex items-center gap-3"><Handshake className="text-[#44734d]" size={20} aria-hidden="true" /><span>Spoluprácu nastavujeme podľa vášho projektu.</span></div>
-            <div className="flex items-center gap-3"><FileText className="text-[#44734d]" size={20} aria-hidden="true" /><span>Komunikujeme zrozumiteľne a vecne.</span></div>
-          </div>
-        </section>
-
-        <section id="sluzby" className="page-shell py-20 sm:py-28">
-          <SectionIntro
-            eyebrow="Služby"
-            title="Praktická podpora tam, kde záleží na každom kroku."
-            text="Zapojíme sa pri príprave, počas realizácie aj v momentoch, keď potrebujete posúdiť ďalší krok. Rozsah spolupráce prispôsobíme vašej situácii."
-          />
-          <div className="mt-12 grid gap-5 lg:grid-cols-3">
-            {services.map((service) => {
-              const Icon = service.icon;
-              return (
-                <article key={service.title} className="service-card group">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#edf5ee] text-[#44734d] transition group-hover:bg-[#44734d] group-hover:text-white">
-                    <Icon size={23} aria-hidden="true" />
-                  </div>
-                  <h3 className="mt-7 text-2xl font-semibold tracking-[-0.03em] text-slate-950">{service.title}</h3>
-                  <p className="mt-4 leading-7 text-slate-600">{service.description}</p>
-                  <ul className="mt-7 space-y-3 border-t border-slate-200 pt-6 text-sm font-medium text-slate-700">
-                    {service.items.map((item) => (
-                      <li key={item} className="flex items-center gap-3"><Check size={16} className="text-[#44734d]" aria-hidden="true" />{item}</li>
-                    ))}
-                  </ul>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-
-        <section id="postup" className="bg-slate-950 py-20 text-white sm:py-28">
-          <div className="page-shell">
-            <div className="grid gap-8 lg:grid-cols-[1fr_.72fr] lg:items-end">
-              <div className="max-w-3xl">
-                <p className="eyebrow text-[#a4d09b]">Náš prístup</p>
-                <h2 className="mt-4 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl lg:text-5xl">Menej neistoty. Viac riadeného pohybu vpred.</h2>
-              </div>
-              <p className="text-base leading-8 text-white/65 sm:text-lg">Dobré poradenstvo nie je len o odpovedi na otázku. Je o postupe, ktorému tím rozumie a ktorý dokáže použiť v praxi.</p>
-            </div>
-            <ol className="mt-14 grid gap-4 md:grid-cols-3">
-              {process.map((item) => (
-                <li key={item.number} className="rounded-2xl border border-white/15 bg-white/[0.045] p-6 sm:p-7">
-                  <span className="text-sm font-semibold tracking-[0.14em] text-[#a4d09b]">{item.number}</span>
-                  <h3 className="mt-12 text-xl font-semibold">{item.title}</h3>
-                  <p className="mt-4 leading-7 text-white/65">{item.text}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        <section id="pre-koho" className="page-shell py-20 sm:py-28">
-          <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:gap-20">
-            <SectionIntro
-              eyebrow="Pre koho"
-              title="Partnerstvo, ktoré sa prispôsobí vašej realite."
-              text="Komplexnosť projektu nemusí znamenať zbytočne komplikovanú spoluprácu. Zvolíme taký rozsah podpory, ktorý prinesie reálny posun."
-            />
-            <div className="divide-y divide-slate-200 border-y border-slate-200">
-              {audiences.map((audience, index) => (
-                <div key={audience.title} className="group grid gap-3 py-7 sm:grid-cols-[3rem_1fr_auto] sm:items-start">
-                  <span className="text-lg font-semibold text-[#44734d]">0{index + 1}</span>
-                  <div>
-                    <h3 className="text-xl font-semibold tracking-[-0.025em] text-slate-950">{audience.title}</h3>
-                    <p className="mt-3 max-w-xl leading-7 text-slate-600">{audience.text}</p>
-                  </div>
-                  <ArrowRight className="hidden text-slate-300 transition group-hover:translate-x-1 group-hover:text-[#44734d] sm:block" size={21} aria-hidden="true" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="page-shell pb-20 sm:pb-28">
-          <div className="rounded-[2rem] bg-[#e6efe5] px-6 py-12 sm:px-10 sm:py-14 lg:flex lg:items-center lg:justify-between lg:gap-12 lg:px-16">
-            <div className="max-w-2xl">
-              <p className="eyebrow text-[#44734d]">Prvý krok</p>
-              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">Potrebujete si ujasniť ďalší krok?</h2>
-              <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">Povedzte nám stručne, čo riešite. Spoločne sa pozrieme, kde má odborná podpora najväčší zmysel.</p>
-            </div>
-            <a href="#kontakt" className="button button-primary mt-8 shrink-0 lg:mt-0">
-              Začať konzultáciu
-              <ArrowRight size={18} aria-hidden="true" />
-            </a>
-          </div>
-        </section>
-
-        <section className="border-y border-slate-200 bg-white py-20 sm:py-28">
-          <div className="page-shell grid gap-14 lg:grid-cols-[.85fr_1.15fr]">
-            <SectionIntro
-              eyebrow="Časté otázky"
-              title="Hovorme o vašom projekte konkrétne."
-              text="Tu sú odpovede na otázky, s ktorými sa pri prvom rozhovore stretávame najčastejšie."
-            />
-            <div className="divide-y divide-slate-200 border-y border-slate-200">
-              {questions.map((item, index) => {
-                const isOpen = openQuestion === index;
-                return (
-                  <div key={item.question}>
-                    <button
-                      type="button"
-                      className="flex w-full items-center justify-between gap-6 py-6 text-left text-lg font-semibold tracking-[-0.02em] text-slate-950"
-                      aria-expanded={isOpen}
-                      onClick={() => setOpenQuestion(isOpen ? null : index)}
-                    >
-                      {item.question}
-                      <ChevronDown className={`shrink-0 text-[#44734d] transition ${isOpen ? "rotate-180" : ""}`} size={22} aria-hidden="true" />
-                    </button>
-                    {isOpen && <p className="max-w-2xl pb-6 leading-7 text-slate-600">{item.answer}</p>}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section id="kontakt" className="page-shell py-20 sm:py-28">
-          <div className="grid overflow-hidden rounded-[2rem] border border-slate-200 bg-white lg:grid-cols-[.82fr_1.18fr]">
-            <div className="bg-slate-950 p-7 text-white sm:p-12">
-              <p className="eyebrow text-[#a4d09b]">Kontakt</p>
-              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Začnime rozhovor o vašom projekte.</h2>
-              <p className="mt-5 max-w-md leading-8 text-white/65">Stačí krátko opísať situáciu. Formulár pripraví e-mail s vaším dopytom, ktorý môžete jednoducho odoslať.</p>
-              <div className="mt-10 border-t border-white/15 pt-7">
-                <p className="text-sm font-medium uppercase tracking-[0.12em] text-white/50">Napíšte nám</p>
-                <a className="mt-3 inline-flex items-center gap-3 text-lg font-medium text-white transition hover:text-[#a4d09b]" href={`mailto:${contactEmail}`}>
-                  <Mail size={19} aria-hidden="true" />
-                  {contactEmail}
-                </a>
-              </div>
-            </div>
-
-            <form onSubmit={submitContact} className="p-7 sm:p-12">
-              <div className="grid gap-6 sm:grid-cols-2">
-                <label className="field-label">
-                  Meno a priezvisko
-                  <input className="field-input" name="name" autoComplete="name" required />
-                </label>
-                <label className="field-label">
-                  Organizácia
-                  <input className="field-input" name="organization" autoComplete="organization" />
-                </label>
-              </div>
-              <label className="field-label mt-6">
-                E-mail
-                <input className="field-input" name="email" type="email" autoComplete="email" required />
-              </label>
-              <label className="field-label mt-6">
-                S čím vám môžeme pomôcť?
-                <textarea className="field-input min-h-32 resize-y" name="message" required />
-              </label>
-              <button type="submit" className="button button-primary mt-7">
-                Pripraviť e-mailový dopyt
-                <ArrowRight size={18} aria-hidden="true" />
-              </button>
-              {formSubmitted && <p className="mt-4 flex items-center gap-2 text-sm text-[#44734d]"><CircleCheck size={17} aria-hidden="true" />Váš e-mailový klient sa otvorí s pripraveným dopytom.</p>}
-              <p className="mt-5 text-xs leading-5 text-slate-500">Odoslaním formulára otvoríte vlastný e-mailový klient. Údaje sa na tejto stránke neukladajú.</p>
-            </form>
-          </div>
-        </section>
-      </main>
-
-      <footer className="border-t border-slate-200 bg-white py-10">
-        <div className="page-shell flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <img src={assetPath} alt="FairPoint" className="h-8 w-auto object-contain" />
-            <p className="mt-3 text-sm text-slate-500">Verejné obstarávanie · Projektový manažment · Fondy EÚ</p>
-          </div>
-          <div className="text-sm text-slate-500 sm:text-right">
-            <p>© {new Date().getFullYear()} FairPoint, s.r.o.</p>
-            <a href={`mailto:${contactEmail}`} className="mt-1 inline-block transition hover:text-[#44734d]">{contactEmail}</a>
+            <div className="constellation-bottom"><span><small>SMER</small>zámer → plán</span><span><small>RYTMUS</small>plán → výsledok</span></div>
           </div>
         </div>
-      </footer>
-    </div>
-  );
+      </section>
+
+      <section className="ticker"><div><span>Verejné obstarávanie</span><i>✦</i><span>Projektový manažment</span><i>✦</i><span>Fondy Európskej únie</span><i>✦</i><span>Verejné obstarávanie</span><i>✦</i><span>Projektový manažment</span></div></section>
+
+      <section id="sluzby" className="services section"><div className="width"><div className="reveal"><Marker number="02" label="ČO ROBÍME" /></div><div className="heading split"><h2 className="reveal">Nedávame vám <em>rady.</em><br />Dávame veciam smer.</h2><p className="reveal d1">Vstúpime tam, kde sa rozhoduje o kvalite ďalšieho kroku. Vecne, priamo a s citom pre realitu projektu.</p></div>
+        <div className="service-grid">{services.map(([number, Icon, title, copy, tags], index) => <article className={`service-card reveal d${index + 1}`} key={title}><div className="card-top"><span>{number}</span><Icon size={25} /></div><h3>{title}</h3><p>{copy}</p><div className="tags">{tags.map((tag) => <span key={tag}>{tag}</span>)}</div><a href="#kontakt" aria-label={`Konzultovať ${title}`}><ArrowUpRight size={23} /></a></article>)}</div>
+      </div></section>
+
+      <section id="pristup" className="approach section"><div className="glow" /><div className="width approach-grid"><div className="approach-copy reveal"><Marker number="03" label="AKO PRACUJEME" /><h2>Keď je veľa premenných, <em>nájdeme os.</em></h2><p>Nerobíme okolo projektu viac ruchu. Odhaľujeme podstatné, nastavujeme poradie a držíme veci v pohybe.</p></div><div className="path">{[["01", "Zachytíme situáciu", "Ciele, obmedzenia, ľudia a otázky, ktoré si projekt pýta."], ["02", "Nakreslíme postup", "Rozhodnutia, dokumenty a míľniky dostanú jasnú logiku."], ["03", "Držíme kurz", "Koordinácia, dohľad a odborný nadhľad tam, kde sú naozaj potrebné."]].map(([n, title, text], index) => <article key={n} className={`path-step reveal d${index + 1}`}><b>{n}</b><div><h3>{title}</h3><p>{text}</p></div><MoveRight size={23} /></article>)}</div></div></section>
+
+      <section id="pre-koho" className="audience section"><div className="width"><div className="reveal"><Marker number="04" label="PRE KOHO" /></div><p className="statement reveal">Spolupráca, ktorá sa nezačína univerzálnym balíkom. Začína sa <em>vašou situáciou.</em></p><div className="audience-list">{[["Samosprávy a verejné inštitúcie", "Keď investícia, verejný záujem a formálne požiadavky musia fungovať naraz."], ["Organizácie a prijímatelia podpory", "Keď treba premeniť zámer na projekt, ktorý obstojí počas celej realizácie."], ["Tímy s vysokou zodpovednosťou", "Keď potrebujete silný odborný pohľad bez pridania ďalšej vrstvy komplikácií."]].map(([title, text], index) => <article className={`audience-row reveal d${index + 1}`} key={title}><b>0{index + 1}</b><h3>{title}</h3><p>{text}</p><ArrowRight size={24} /></article>)}</div></div></section>
+
+      <section className="quote"><div className="width"><p className="reveal">„Najlepší proces je ten, ktorý ľuďom pomôže urobiť <em>dobré rozhodnutie</em> vo chvíli, keď na ňom záleží.“</p><span className="reveal d1">✦ FairPoint / s dôrazom na podstatné</span></div></section>
+
+      <section className="faq section"><div className="width faq-grid"><div className="reveal"><Marker number="05" label="OTÁZKY" /><h2>Prvých pár <em>odpovedí.</em></h2></div><div>{questions.map(([question, answer], index) => <article className={`faq-item reveal ${faq === index ? "active" : ""}`} key={question}><button type="button" onClick={() => setFaq(faq === index ? -1 : index)} aria-expanded={faq === index}><b>0{index + 1}</b><span>{question}</span><ChevronDown size={22} /></button><div className="answer"><p>{answer}</p></div></article>)}</div></div></section>
+
+      <section id="kontakt" className="contact"><div className="contact-orb ca" /><div className="contact-orb cb" /><div className="width contact-grid"><div className="contact-copy reveal"><Marker number="06" label="KONTAKT" /><h2>Začnime tam, kde ste <em>teraz.</em></h2><p>Jeden dobrý rozhovor dokáže projekt posunúť. Napíšte nám, čo riešite, a vrátime sa k vám s jasným ďalším krokom.</p><a href={`mailto:${mail}`}><Mail size={19} />{mail}<ArrowUpRight size={19} /></a></div><form onSubmit={enquire} className="form reveal d1"><label>Meno a priezvisko<input name="name" required autoComplete="name" placeholder="Ako vás môžeme osloviť?" /></label><label>Organizácia<input name="organization" autoComplete="organization" placeholder="Názov organizácie" /></label><label>E-mail<input name="email" required type="email" autoComplete="email" placeholder="vas@email.sk" /></label><label>Čo je pred vami?<textarea name="message" required placeholder="Stručne opíšte váš projekt alebo otázku." /></label><button className="button dark" type="submit">Pripraviť dopyt <ArrowRight size={18} /></button>{sent && <strong className="sent"><Check size={17} />Otvorí sa e-mailový klient s pripraveným dopytom.</strong>}<small>Formulár neukladá údaje na stránke. Pošle vás do vášho e-mailového klienta.</small></form></div></section>
+    </main>
+
+    <footer><div className="width footer-top"><a href="#uvod"><img src={logo} alt="FairPoint" /></a><p>Verejné obstarávanie<br />Projektový manažment<br />Fondy Európskej únie</p><a className="footer-round" href="#kontakt">Kontakt<br /><ArrowUpRight size={18} /></a></div><div className="width footer-bottom"><span>© {new Date().getFullYear()} FairPoint, s.r.o.</span><span>Slovensko / Európska únia</span><a href={`mailto:${mail}`}>{mail}</a></div></footer>
+  </div>;
 }
