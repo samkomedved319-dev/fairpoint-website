@@ -1,28 +1,61 @@
 import { useEffect, useState } from "react";
 import { ArrowDownRight, ArrowRight, ArrowUpRight, ChevronDown, Compass, Globe2, Landmark, Mail, Menu, MoveRight, Sparkles, X } from "lucide-react";
 
-const mail = "info@fairpoint.sk";
+type Locale = "sk" | "en";
+const email = "syntrix.sk@gmail.com";
 const mark = `${import.meta.env.BASE_URL}fairpoint-mark.svg`;
-const nav = [["Služby", "#sluzby"], ["Prístup", "#pristup"], ["Pre koho", "#pre-koho"], ["Kontakt", "#kontakt"]] as const;
-const services = [
-  ["01", Landmark, "Verejné obstarávanie", "Od prvého zadania po uzatvorenie procesu. Strážime podklady, postup aj zrozumiteľnosť rozhodnutí.", ["Zákazky", "Súťažné podklady", "Metodika"]],
-  ["02", Compass, "Projektový manažment", "Dávame projektu rytmus. Jasné vlastníctvo úloh, fungujúca koordinácia a menej slepých miest.", ["Harmonogram", "Koordinácia", "Výstupy"]],
-  ["03", Globe2, "Fondy Európskej únie", "Meníme výzvy a nápady na kvalitne pripravené projekty s udržateľnou administratívou.", ["Projektový zámer", "Žiadosť", "Realizácia"]],
-] as const;
-const questions = [
-  ["S čím začať, ak ešte nemáme všetky podklady?", "Práve vtedy má prvý rozhovor najväčší zmysel. Pomôžeme rozlíšiť, čo treba vyriešiť hneď, čo môže počkať a ktoré otázky rozhodnú o dobrom ďalšom kroku."],
-  ["Viete sa pripojiť aj ku konkrétnej časti projektu?", "Áno. Nevnucujeme plošné riešenie. Môžeme pomôcť s jedným rozhodnutím, konkrétnou fázou alebo nastaviť priebežnú odbornú podporu."],
-  ["Ako funguje prvá konzultácia?", "Stručne prejdeme cieľ, aktuálnu situáciu, termíny a riziká. Odchádzate s jasnejším obrazom situácie a odporúčaním, ako pokračovať."],
-] as const;
+
+const content = {
+  sk: {
+    nav: [["Služby", "#sluzby"], ["Prístup", "#pristup"], ["Pre koho", "#pre-koho"], ["Kontakt", "#kontakt"]],
+    skip: "Preskočiť na obsah", menuOpen: "Otvoriť menu", menuClose: "Zavrieť menu", start: "Začať rozhovor", mobileStart: "Poďme na to",
+    kicker: "NOVÁ PORADENSKÁ KANCELÁRIA / SLOVENSKO", hero: <>Začíname s <em>jasným</em> pohľadom na projekty.</>,
+    lede: "FairPoint je nová poradenská kancelária pre verejné obstarávanie, projektové riadenie a príležitosti z fondov EÚ.", primary: "Dohodnúť konzultáciu", secondary: "Objaviť možnosti", note: <>Budujeme značku otvorene. <strong>Bez umelých referencií a nafúknutých sľubov.</strong></>,
+    view: "FAIRPOINT / KDE ZAČÍNAME", status: "OTVORENÍ SPOLUPRÁCI", signals: [["ZÁMER", "prvý rozhovor"], ["POSTUP", "jasné kroky"], ["PARTNERSTVO", "od začiatku"]],
+    ticker: ["Verejné obstarávanie", "Projektový manažment", "Fondy Európskej únie"],
+    servicesMarker: "ČO ROBÍME", servicesTitle: <>Nedávame vám <em>rady.</em><br />Dávame veciam smer.</>, servicesText: "Vstúpime tam, kde sa rozhoduje o kvalite ďalšieho kroku. Vecne, priamo a s citom pre realitu projektu.",
+    services: [["Verejné obstarávanie", "Od prvého zadania po uzatvorenie procesu. Strážime podklady, postup aj zrozumiteľnosť rozhodnutí.", ["Zákazky", "Súťažné podklady", "Metodika"]], ["Projektový manažment", "Dávame projektu rytmus. Jasné vlastníctvo úloh, fungujúca koordinácia a menej slepých miest.", ["Harmonogram", "Koordinácia", "Výstupy"]], ["Fondy Európskej únie", "Meníme výzvy a nápady na kvalitne pripravené projekty s udržateľnou administratívou.", ["Projektový zámer", "Žiadosť", "Realizácia"]]],
+    approachMarker: "AKO PRACUJEME", approachTitle: <>Keď je veľa premenných, <em>nájdeme os.</em></>, approachText: "Nerobíme okolo projektu viac ruchu. Odhaľujeme podstatné, nastavujeme poradie a držíme veci v pohybe.",
+    steps: [["Zachytíme situáciu", "Ciele, obmedzenia, ľudia a otázky, ktoré si projekt pýta."], ["Nakreslíme postup", "Rozhodnutia, dokumenty a míľniky dostanú jasnú logiku."], ["Držíme kurz", "Koordinácia, dohľad a odborný nadhľad tam, kde sú naozaj potrebné."]],
+    audienceMarker: "PRE KOHO", audienceTitle: <>Začíname bez katalógu hotových príbehov. Najprv chceme pochopiť <em>vašu situáciu.</em></>,
+    audiences: [["Samosprávy a verejné inštitúcie", "Keď investícia, verejný záujem a formálne požiadavky musia fungovať naraz."], ["Organizácie a prijímatelia podpory", "Keď treba premeniť zámer na projekt, ktorý obstojí počas celej realizácie."], ["Tímy s vysokou zodpovednosťou", "Keď potrebujete silný odborný pohľad bez pridania ďalšej vrstvy komplikácií."]],
+    quote: <>Začíname <em>priamo.</em> Spoznajte nás cez rozhovor, nie cez nafúknuté sľuby.</>, quoteBy: "✦ FairPoint / nový partner pre dôležité rozhodnutia", faqMarker: "OTÁZKY", faqTitle: <>Prvých pár <em>odpovedí.</em></>,
+    faq: [["S čím začať, ak ešte nemáme všetky podklady?", "Práve vtedy má prvý rozhovor najväčší zmysel. Pomôžeme rozlíšiť, čo treba vyriešiť hneď, čo môže počkať a ktoré otázky rozhodnú o dobrom ďalšom kroku."], ["Viete sa pripojiť aj ku konkrétnej časti projektu?", "Áno. Nevnucujeme plošné riešenie. Môžeme pomôcť s jedným rozhodnutím, konkrétnou fázou alebo nastaviť priebežnú odbornú podporu."], ["Ako funguje prvá konzultácia?", "Stručne prejdeme cieľ, aktuálnu situáciu, termíny a riziká. Odchádzate s jasnejším obrazom situácie a odporúčaním, ako pokračovať."]],
+    contactMarker: "KONTAKT", contactTitle: <>Začnime tam, kde ste <em>teraz.</em></>, contactText: "Jeden dobrý rozhovor dokáže projekt posunúť. Napíšte nám, čo riešite, a vrátime sa k vám s jasným ďalším krokom.",
+    fields: ["Meno a priezvisko", "Organizácia", "E-mail", "Čo je pred vami?"], placeholders: ["Ako vás môžeme osloviť?", "Názov organizácie", "vas@email.sk", "Stručne opíšte váš projekt alebo otázku."], submit: "Odoslať dopyt", privacy: "Odoslaním formulára pošlete dopyt priamo na e-mail FairPoint. Vaše údaje sa neukladajú na tejto stránke.", footer: "Verejné obstarávanie\nProjektový manažment\nFondy Európskej únie", region: "Slovensko / Európska únia"
+  },
+  en: {
+    nav: [["Services", "#sluzby"], ["Approach", "#pristup"], ["Who we help", "#pre-koho"], ["Contact", "#kontakt"]],
+    skip: "Skip to content", menuOpen: "Open menu", menuClose: "Close menu", start: "Start a conversation", mobileStart: "Let’s talk",
+    kicker: "NEW CONSULTANCY / SLOVAKIA", hero: <>Starting with a <em>clear</em> view of your projects.</>,
+    lede: "FairPoint is a new consultancy for public procurement, project delivery and EU funding opportunities.", primary: "Book a consultation", secondary: "Explore services", note: <>We are building the brand openly. <strong>No invented references and no inflated promises.</strong></>,
+    view: "FAIRPOINT / WHERE WE START", status: "OPEN TO COLLABORATION", signals: [["INTENT", "first conversation"], ["PROCESS", "clear steps"], ["PARTNERSHIP", "from day one"]],
+    ticker: ["Public procurement", "Project management", "European Union funds"],
+    servicesMarker: "WHAT WE DO", servicesTitle: <>We do not give <em>advice.</em><br />We give work direction.</>, servicesText: "We step in where the quality of the next decision matters. Directly, carefully and with an understanding of the project’s reality.",
+    services: [["Public procurement", "From the first brief to a closed process. We bring clarity to the documents, the process and the decisions behind it.", ["Tenders", "Tender documents", "Guidance"]], ["Project management", "We give projects a working rhythm: clear ownership, practical coordination and fewer blind spots.", ["Timeline", "Coordination", "Outcomes"]], ["European Union funds", "We turn calls and ideas into well-prepared projects with sustainable administration.", ["Project concept", "Application", "Delivery"]]],
+    approachMarker: "HOW WE WORK", approachTitle: <>When there are many variables, <em>we find the axis.</em></>, approachText: "We do not create more noise around a project. We identify what matters, set the order and keep the work moving.",
+    steps: [["Understand the situation", "Goals, constraints, people and the questions the project needs answered."], ["Draw the route", "Decisions, documents and milestones gain a clear and usable logic."], ["Keep the course", "Coordination, oversight and expert perspective exactly where they are needed."]],
+    audienceMarker: "WHO WE HELP", audienceTitle: <>We are starting without a catalogue of case studies. First, we want to understand <em>your situation.</em></>,
+    audiences: [["Municipalities and public institutions", "When investment, public value and formal requirements must work together."], ["Organisations and funding recipients", "When an intention needs to become a project that holds together throughout delivery."], ["Teams with high responsibility", "When you need a strong expert perspective without adding another layer of complexity."]],
+    quote: <>We start <em>directly.</em> Get to know us through a conversation, not inflated claims.</>, quoteBy: "✦ FairPoint / a new partner for important decisions", faqMarker: "QUESTIONS", faqTitle: <>A few first <em>answers.</em></>,
+    faq: [["Where do we start if not all materials are ready?", "That is often the best time for a first conversation. We help distinguish what needs solving now, what can wait, and which questions will determine the right next step."], ["Can you support one specific part of a project?", "Yes. We do not force a broad package. We can help with one decision, one project phase, or set up ongoing expert support."], ["How does the first consultation work?", "We briefly discuss the aim, current situation, timeline and risks. You leave with a clearer view and a practical recommendation for what comes next."]],
+    contactMarker: "CONTACT", contactTitle: <>Let’s start where you <em>are now.</em></>, contactText: "One good conversation can move a project forward. Tell us what you are working through, and we will return with a clear next step.",
+    fields: ["Name", "Organisation", "Email", "What is ahead of you?"], placeholders: ["How should we address you?", "Organisation name", "you@email.com", "Briefly describe your project or question."], submit: "Send enquiry", privacy: "Submitting this form sends your enquiry directly to the FairPoint email inbox. Your data is not stored on this website.", footer: "Public procurement\nProject management\nEuropean Union funds", region: "Slovakia / European Union"
+  }
+} as const;
 
 function Marker({ number, label }: { number: string; label: string }) { return <div className="marker"><b>{number}</b><i /><span>{label}</span></div>; }
 
 export default function App() {
+  const [lang, setLang] = useState<Locale>("sk");
   const [menu, setMenu] = useState(false);
   const [faq, setFaq] = useState(0);
+  const t = content[lang];
+  const icons = [Landmark, Compass, Globe2];
 
+  useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   useEffect(() => {
-    const reveal = new IntersectionObserver((entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("shown")), { threshold: 0.1 });
+    const reveal = new IntersectionObserver((items) => items.forEach((item) => item.isIntersecting && item.target.classList.add("shown")), { threshold: .1 });
     document.querySelectorAll(".reveal").forEach((item) => reveal.observe(item));
     const progress = () => document.documentElement.style.setProperty("--progress", `${window.scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)}`);
     progress(); window.addEventListener("scroll", progress, { passive: true });
@@ -30,52 +63,18 @@ export default function App() {
   }, []);
 
   return <div className="site">
-    <div className="progress" /><a className="skip" href="#obsah">Preskočiť na obsah</a>
-    <header className="header"><div className="width header-inner">
-      <a href="#uvod" className="brand" aria-label="FairPoint — úvod"><img src={mark} alt="" /><span><b>FAIR</b>POINT<small>PROJECT CLARITY</small></span></a>
-      <nav className="nav" aria-label="Hlavná navigácia">{nav.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</nav>
-      <a className="nav-cta" href="#kontakt">Začať rozhovor <ArrowUpRight size={17} /></a>
-      <button className="menu" type="button" onClick={() => setMenu(!menu)} aria-label={menu ? "Zavrieť menu" : "Otvoriť menu"}>{menu ? <X /> : <Menu />}</button>
-    </div><div className={`mobile ${menu ? "open" : ""}`}><nav className="width">{nav.map(([label, href]) => <a onClick={() => setMenu(false)} key={href} href={href}>{label}<ArrowUpRight size={20} /></a>)}<a onClick={() => setMenu(false)} href="#kontakt" className="mobile-button">Poďme na to <ArrowRight size={18} /></a></nav></div></header>
-
+    <div className="progress" /><a className="skip" href="#obsah">{t.skip}</a>
+    <header className="header"><div className="width header-inner"><a href="#uvod" className="brand" aria-label="FairPoint"><img src={mark} alt="" /><span><b>FAIR</b>POINT<small>PROJECT CLARITY</small></span></a><nav className="nav" aria-label="Main navigation">{t.nav.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</nav><div className="language"><button className={lang === "sk" ? "selected" : ""} onClick={() => setLang("sk")}>SK</button><i /> <button className={lang === "en" ? "selected" : ""} onClick={() => setLang("en")}>EN</button></div><a className="nav-cta" href="#kontakt">{t.start}<ArrowUpRight size={17} /></a><button className="menu" type="button" onClick={() => setMenu(!menu)} aria-label={menu ? t.menuClose : t.menuOpen}>{menu ? <X /> : <Menu />}</button></div><div className={`mobile ${menu ? "open" : ""}`}><nav className="width">{t.nav.map(([label, href]) => <a onClick={() => setMenu(false)} key={href} href={href}>{label}<ArrowUpRight size={20} /></a>)}<div className="mobile-language"><button onClick={() => setLang("sk")} className={lang === "sk" ? "selected" : ""}>SK</button><button onClick={() => setLang("en")} className={lang === "en" ? "selected" : ""}>EN</button></div><a onClick={() => setMenu(false)} href="#kontakt" className="mobile-button">{t.mobileStart}<ArrowRight size={18} /></a></nav></div></header>
     <main id="obsah">
-      <section id="uvod" className="hero">
-        <div className="hero-grid" /><div className="orb orb-a" /><div className="orb orb-b" /><div className="noise" />
-        <div className="width hero-layout">
-          <div className="hero-copy">
-            <p className="kicker reveal"><i />NOVÁ PORADENSKÁ KANCELÁRIA / SLOVENSKO</p>
-            <h1 className="reveal d1">Začíname s <em>jasným</em> pohľadom na projekty.</h1>
-            <p className="lede reveal d2">FairPoint je nová poradenská kancelária pre verejné obstarávanie, projektové riadenie a príležitosti z fondov EÚ.</p>
-            <div className="actions reveal d3"><a href="#kontakt" className="button coral">Dohodnúť konzultáciu <ArrowRight size={19} /></a><a href="#sluzby" className="text-action">Objaviť možnosti <ArrowDownRight size={19} /></a></div>
-            <div className="hero-note reveal d4"><b>01</b><span>Budujeme značku otvorene. <strong>Bez umelých referencií a nafúknutých sľubov.</strong></span></div>
-          </div>
-          <div className="constellation reveal d2" aria-label="Vizualizácia projektu v pohybe">
-            <div className="constellation-top"><span>FAIRPOINT / KDE ZAČÍNAME</span><b><i />OTVORENÍ SPOLUPRÁCI</b></div>
-            <div className="constellation-core"><div className="ring r1" /><div className="ring r2" /><div className="ring r3" /><div className="center"><Sparkles size={29} /><span>F</span></div>
-              <div className="signal s1"><i className="coral-dot" /><b>ZÁMER</b><small>prvý rozhovor</small></div><div className="signal s2"><i className="lime-dot" /><b>POSTUP</b><small>jasné kroky</small></div><div className="signal s3"><i className="violet-dot" /><b>PARTNERSTVO</b><small>od začiatku</small></div>
-            </div>
-            <div className="constellation-bottom"><span><small>SMER</small>zámer → plán</span><span><small>RYTMUS</small>plán → výsledok</span></div>
-          </div>
-        </div>
-      </section>
-
-      <section className="ticker"><div><span>Verejné obstarávanie</span><i>✦</i><span>Projektový manažment</span><i>✦</i><span>Fondy Európskej únie</span><i>✦</i><span>Verejné obstarávanie</span><i>✦</i><span>Projektový manažment</span></div></section>
-
-      <section id="sluzby" className="services section"><div className="width"><div className="reveal"><Marker number="02" label="ČO ROBÍME" /></div><div className="heading split"><h2 className="reveal">Nedávame vám <em>rady.</em><br />Dávame veciam smer.</h2><p className="reveal d1">Vstúpime tam, kde sa rozhoduje o kvalite ďalšieho kroku. Vecne, priamo a s citom pre realitu projektu.</p></div>
-        <div className="service-grid">{services.map(([number, Icon, title, copy, tags], index) => <article className={`service-card reveal d${index + 1}`} key={title}><div className="card-top"><span>{number}</span><Icon size={25} /></div><h3>{title}</h3><p>{copy}</p><div className="tags">{tags.map((tag) => <span key={tag}>{tag}</span>)}</div><a href="#kontakt" aria-label={`Konzultovať ${title}`}><ArrowUpRight size={23} /></a></article>)}</div>
-      </div></section>
-
-      <section id="pristup" className="approach section"><div className="glow" /><div className="width approach-grid"><div className="approach-copy reveal"><Marker number="03" label="AKO PRACUJEME" /><h2>Keď je veľa premenných, <em>nájdeme os.</em></h2><p>Nerobíme okolo projektu viac ruchu. Odhaľujeme podstatné, nastavujeme poradie a držíme veci v pohybe.</p></div><div className="path">{[["01", "Zachytíme situáciu", "Ciele, obmedzenia, ľudia a otázky, ktoré si projekt pýta."], ["02", "Nakreslíme postup", "Rozhodnutia, dokumenty a míľniky dostanú jasnú logiku."], ["03", "Držíme kurz", "Koordinácia, dohľad a odborný nadhľad tam, kde sú naozaj potrebné."]].map(([n, title, text], index) => <article key={n} className={`path-step reveal d${index + 1}`}><b>{n}</b><div><h3>{title}</h3><p>{text}</p></div><MoveRight size={23} /></article>)}</div></div></section>
-
-      <section id="pre-koho" className="audience section"><div className="width"><div className="reveal"><Marker number="04" label="PRE KOHO" /></div><p className="statement reveal">Začíname bez katalógu hotových príbehov. Najprv chceme pochopiť <em>vašu situáciu.</em></p><div className="audience-list">{[["Samosprávy a verejné inštitúcie", "Keď investícia, verejný záujem a formálne požiadavky musia fungovať naraz."], ["Organizácie a prijímatelia podpory", "Keď treba premeniť zámer na projekt, ktorý obstojí počas celej realizácie."], ["Tímy s vysokou zodpovednosťou", "Keď potrebujete silný odborný pohľad bez pridania ďalšej vrstvy komplikácií."]].map(([title, text], index) => <article className={`audience-row reveal d${index + 1}`} key={title}><b>0{index + 1}</b><h3>{title}</h3><p>{text}</p><ArrowRight size={24} /></article>)}</div></div></section>
-
-      <section className="quote"><div className="width"><p className="reveal">Začíname <em>priamo.</em> Spoznajte nás cez rozhovor, nie cez nafúknuté sľuby.</p><span className="reveal d1">✦ FairPoint / nový partner pre dôležité rozhodnutia</span></div></section>
-
-      <section className="faq section"><div className="width faq-grid"><div className="reveal"><Marker number="05" label="OTÁZKY" /><h2>Prvých pár <em>odpovedí.</em></h2></div><div>{questions.map(([question, answer], index) => <article className={`faq-item reveal ${faq === index ? "active" : ""}`} key={question}><button type="button" onClick={() => setFaq(faq === index ? -1 : index)} aria-expanded={faq === index}><b>0{index + 1}</b><span>{question}</span><ChevronDown size={22} /></button><div className="answer"><p>{answer}</p></div></article>)}</div></div></section>
-
-      <section id="kontakt" className="contact"><div className="contact-orb ca" /><div className="contact-orb cb" /><div className="width contact-grid"><div className="contact-copy reveal"><Marker number="06" label="KONTAKT" /><h2>Začnime tam, kde ste <em>teraz.</em></h2><p>Jeden dobrý rozhovor dokáže projekt posunúť. Napíšte nám, čo riešite, a vrátime sa k vám s jasným ďalším krokom.</p><a href={`mailto:${mail}`}><Mail size={19} />{mail}<ArrowUpRight size={19} /></a></div><form action={`https://formsubmit.co/${mail}`} method="POST" className="form reveal d1"><input type="hidden" name="_subject" value="Nový dopyt z webu FairPoint" /><input type="hidden" name="_template" value="table" /><input type="text" name="_honey" className="honey" tabIndex={-1} autoComplete="off" aria-hidden="true" /><label>Meno a priezvisko<input name="name" required autoComplete="name" placeholder="Ako vás môžeme osloviť?" /></label><label>Organizácia<input name="organization" autoComplete="organization" placeholder="Názov organizácie" /></label><label>E-mail<input name="email" required type="email" autoComplete="email" placeholder="vas@email.sk" /></label><label>Čo je pred vami?<textarea name="message" required placeholder="Stručne opíšte váš projekt alebo otázku." /></label><button className="button dark" type="submit">Odoslať dopyt <ArrowRight size={18} /></button><small>Odoslaním formulára pošlete dopyt priamo na e-mail FairPoint. Vaše údaje sa neukladajú na tejto stránke.</small></form></div></section>
+      <section id="uvod" className="hero"><div className="hero-grid" /><div className="orb orb-a" /><div className="orb orb-b" /><div className="noise" /><div className="width hero-layout"><div className="hero-copy"><p className="kicker reveal"><i />{t.kicker}</p><h1 className="reveal d1">{t.hero}</h1><p className="lede reveal d2">{t.lede}</p><div className="actions reveal d3"><a href="#kontakt" className="button coral">{t.primary}<ArrowRight size={19} /></a><a href="#sluzby" className="text-action">{t.secondary}<ArrowDownRight size={19} /></a></div><div className="hero-note reveal d4"><b>01</b><span>{t.note}</span></div></div><div className="constellation reveal d2"><div className="constellation-top"><span>{t.view}</span><b><i />{t.status}</b></div><div className="constellation-core"><div className="ring r1" /><div className="ring r2" /><div className="ring r3" /><div className="center"><Sparkles size={29} /><span>F</span></div>{t.signals.map(([title, sub], index) => <div className={`signal s${index + 1}`} key={title}><i className={["coral-dot", "lime-dot", "violet-dot"][index]} /><b>{title}</b><small>{sub}</small></div>)}</div><div className="constellation-bottom"><span><small>{lang === "sk" ? "SMER" : "DIRECTION"}</small>{lang === "sk" ? "zámer → plán" : "intent → plan"}</span><span><small>{lang === "sk" ? "RYTMUS" : "RHYTHM"}</small>{lang === "sk" ? "plán → výsledok" : "plan → result"}</span></div></div></div></section>
+      <section className="ticker"><div>{[...t.ticker, ...t.ticker].map((item, index) => <span key={`${item}-${index}`}>{item}{index < 5 && <i>✦</i>}</span>)}</div></section>
+      <section id="sluzby" className="services section"><div className="width"><div className="reveal"><Marker number="02" label={t.servicesMarker} /></div><div className="heading split"><h2 className="reveal">{t.servicesTitle}</h2><p className="reveal d1">{t.servicesText}</p></div><div className="service-grid">{t.services.map(([title, text, tags], index) => { const Icon = icons[index]; return <article className={`service-card reveal d${index + 1}`} key={title}><div className="card-top"><span>0{index + 1}</span><Icon size={25} /></div><h3>{title}</h3><p>{text}</p><div className="tags">{tags.map((tag) => <span key={tag}>{tag}</span>)}</div><a href="#kontakt" aria-label={t.primary}><ArrowUpRight size={23} /></a></article>; })}</div></div></section>
+      <section id="pristup" className="approach section"><div className="glow" /><div className="width approach-grid"><div className="approach-copy reveal"><Marker number="03" label={t.approachMarker} /><h2>{t.approachTitle}</h2><p>{t.approachText}</p></div><div className="path">{t.steps.map(([title, text], index) => <article key={title} className={`path-step reveal d${index + 1}`}><b>0{index + 1}</b><div><h3>{title}</h3><p>{text}</p></div><MoveRight size={23} /></article>)}</div></div></section>
+      <section id="pre-koho" className="audience section"><div className="width"><div className="reveal"><Marker number="04" label={t.audienceMarker} /></div><p className="statement reveal">{t.audienceTitle}</p><div className="audience-list">{t.audiences.map(([title, text], index) => <article className={`audience-row reveal d${index + 1}`} key={title}><b>0{index + 1}</b><h3>{title}</h3><p>{text}</p><ArrowRight size={24} /></article>)}</div></div></section>
+      <section className="quote"><div className="width"><p className="reveal">{t.quote}</p><span className="reveal d1">{t.quoteBy}</span></div></section>
+      <section className="faq section"><div className="width faq-grid"><div className="reveal"><Marker number="05" label={t.faqMarker} /><h2>{t.faqTitle}</h2></div><div>{t.faq.map(([question, answer], index) => <article className={`faq-item reveal ${faq === index ? "active" : ""}`} key={question}><button type="button" onClick={() => setFaq(faq === index ? -1 : index)} aria-expanded={faq === index}><b>0{index + 1}</b><span>{question}</span><ChevronDown size={22} /></button><div className="answer"><p>{answer}</p></div></article>)}</div></div></section>
+      <section id="kontakt" className="contact"><div className="contact-orb ca" /><div className="contact-orb cb" /><div className="width contact-grid"><div className="contact-copy reveal"><Marker number="06" label={t.contactMarker} /><h2>{t.contactTitle}</h2><p>{t.contactText}</p><a href={`mailto:${email}`}><Mail size={19} />{email}<ArrowUpRight size={19} /></a></div><form action={`https://formsubmit.co/${email}`} method="POST" className="form reveal d1"><input type="hidden" name="_subject" value="New FairPoint website enquiry" /><input type="hidden" name="_template" value="table" /><input className="honey" type="text" name="_honey" tabIndex={-1} autoComplete="off" aria-hidden="true" /><label>{t.fields[0]}<input name="name" required autoComplete="name" placeholder={t.placeholders[0]} /></label><label>{t.fields[1]}<input name="organization" autoComplete="organization" placeholder={t.placeholders[1]} /></label><label>{t.fields[2]}<input name="email" required type="email" autoComplete="email" placeholder={t.placeholders[2]} /></label><label>{t.fields[3]}<textarea name="message" required placeholder={t.placeholders[3]} /></label><button className="button dark" type="submit">{t.submit}<ArrowRight size={18} /></button><small>{t.privacy}</small></form></div></section>
     </main>
-
-    <footer><div className="width footer-top"><a href="#uvod" className="footer-brand"><img src={mark} alt="" /><span><b>FAIR</b>POINT</span></a><p>Verejné obstarávanie<br />Projektový manažment<br />Fondy Európskej únie</p><a className="footer-round" href="#kontakt">Kontakt<br /><ArrowUpRight size={18} /></a></div><div className="width footer-bottom"><span>© {new Date().getFullYear()} FairPoint, s.r.o.</span><span>Slovensko / Európska únia</span><a href={`mailto:${mail}`}>{mail}</a></div></footer>
+    <footer><div className="width footer-top"><a href="#uvod" className="footer-brand"><img src={mark} alt="" /><span><b>FAIR</b>POINT</span></a><p>{t.footer.split("\n").map((line) => <>{line}<br /></>)}</p><a className="footer-round" href="#kontakt">{t.nav[3][0]}<br /><ArrowUpRight size={18} /></a></div><div className="width footer-bottom"><span>© {new Date().getFullYear()} FairPoint, s.r.o.</span><span>{t.region}</span><a href={`mailto:${email}`}>{email}</a></div></footer>
   </div>;
 }

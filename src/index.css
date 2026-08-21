@@ -21,3 +21,6 @@ footer{background:var(--ink);color:#fff;padding:3.8rem 0 1.5rem}.footer-top{disp
 @media(max-width:850px){.brand{min-width:auto}.brand span small{display:none}.brand span{font-size:.96rem}.brand img{width:2rem;height:2rem}}
 
 .honey{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important;opacity:0!important}
+
+.language{display:flex;align-items:center;gap:.28rem;margin-right:1rem;padding:.3rem .4rem;border:1px solid rgba(13,16,32,.15);border-radius:99px}.language button,.mobile-language button{border:0;background:transparent;color:#717784;padding:.28rem .38rem;border-radius:99px;font-family:'DM Mono',monospace;font-size:.61rem;letter-spacing:.06em}.language button.selected,.mobile-language button.selected{background:var(--ink);color:#fff}.language i{width:1px;height:.8rem;background:rgba(13,16,32,.2)}.mobile-language{display:flex;gap:.35rem;padding:1rem 0}.mobile-language button{border:1px solid rgba(255,255,255,.2);color:#c5c9d3;padding:.5rem .7rem}.mobile-language button.selected{border-color:var(--lime);background:var(--lime);color:var(--ink)}
+@media(max-width:850px){.header .language{display:none}}
