@@ -2,7 +2,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { ArrowDownRight, ArrowRight, ArrowUpRight, Check, ChevronDown, Compass, Globe2, Landmark, Mail, Menu, MoveRight, Sparkles, X } from "lucide-react";
 
 const mail = "info@fairpoint.sk";
-const logo = `${import.meta.env.BASE_URL}fairpoint-logo.png`;
+const mark = `${import.meta.env.BASE_URL}fairpoint-mark.svg`;
 const nav = [["Služby", "#sluzby"], ["Prístup", "#pristup"], ["Pre koho", "#pre-koho"], ["Kontakt", "#kontakt"]] as const;
 const services = [
   ["01", Landmark, "Verejné obstarávanie", "Od prvého zadania po uzatvorenie procesu. Strážime podklady, postup aj zrozumiteľnosť rozhodnutí.", ["Zákazky", "Súťažné podklady", "Metodika"]],
@@ -39,7 +39,7 @@ export default function App() {
   return <div className="site">
     <div className="progress" /><a className="skip" href="#obsah">Preskočiť na obsah</a>
     <header className="header"><div className="width header-inner">
-      <a href="#uvod" className="brand" aria-label="FairPoint — úvod"><img src={logo} alt="FairPoint" /></a>
+      <a href="#uvod" className="brand" aria-label="FairPoint — úvod"><img src={mark} alt="" /><span><b>FAIR</b>POINT<small>PROJECT CLARITY</small></span></a>
       <nav className="nav" aria-label="Hlavná navigácia">{nav.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</nav>
       <a className="nav-cta" href="#kontakt">Začať rozhovor <ArrowUpRight size={17} /></a>
       <button className="menu" type="button" onClick={() => setMenu(!menu)} aria-label={menu ? "Zavrieť menu" : "Otvoriť menu"}>{menu ? <X /> : <Menu />}</button>
@@ -83,6 +83,6 @@ export default function App() {
       <section id="kontakt" className="contact"><div className="contact-orb ca" /><div className="contact-orb cb" /><div className="width contact-grid"><div className="contact-copy reveal"><Marker number="06" label="KONTAKT" /><h2>Začnime tam, kde ste <em>teraz.</em></h2><p>Jeden dobrý rozhovor dokáže projekt posunúť. Napíšte nám, čo riešite, a vrátime sa k vám s jasným ďalším krokom.</p><a href={`mailto:${mail}`}><Mail size={19} />{mail}<ArrowUpRight size={19} /></a></div><form onSubmit={enquire} className="form reveal d1"><label>Meno a priezvisko<input name="name" required autoComplete="name" placeholder="Ako vás môžeme osloviť?" /></label><label>Organizácia<input name="organization" autoComplete="organization" placeholder="Názov organizácie" /></label><label>E-mail<input name="email" required type="email" autoComplete="email" placeholder="vas@email.sk" /></label><label>Čo je pred vami?<textarea name="message" required placeholder="Stručne opíšte váš projekt alebo otázku." /></label><button className="button dark" type="submit">Pripraviť dopyt <ArrowRight size={18} /></button>{sent && <strong className="sent"><Check size={17} />Otvorí sa e-mailový klient s pripraveným dopytom.</strong>}<small>Formulár neukladá údaje na stránke. Pošle vás do vášho e-mailového klienta.</small></form></div></section>
     </main>
 
-    <footer><div className="width footer-top"><a href="#uvod"><img src={logo} alt="FairPoint" /></a><p>Verejné obstarávanie<br />Projektový manažment<br />Fondy Európskej únie</p><a className="footer-round" href="#kontakt">Kontakt<br /><ArrowUpRight size={18} /></a></div><div className="width footer-bottom"><span>© {new Date().getFullYear()} FairPoint, s.r.o.</span><span>Slovensko / Európska únia</span><a href={`mailto:${mail}`}>{mail}</a></div></footer>
+    <footer><div className="width footer-top"><a href="#uvod" className="footer-brand"><img src={mark} alt="" /><span><b>FAIR</b>POINT</span></a><p>Verejné obstarávanie<br />Projektový manažment<br />Fondy Európskej únie</p><a className="footer-round" href="#kontakt">Kontakt<br /><ArrowUpRight size={18} /></a></div><div className="width footer-bottom"><span>© {new Date().getFullYear()} FairPoint, s.r.o.</span><span>Slovensko / Európska únia</span><a href={`mailto:${mail}`}>{mail}</a></div></footer>
   </div>;
 }
