@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FairPoint — Message received</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;700;800&family=Syne:wght@600;700;800&display=swap');
+    :root{--ink:#101322;--paper:#f8f5ee;--coral:#ff6248;--lime:#cef46b;--violet:#8d80ff}*{box-sizing:border-box}body{margin:0;min-height:100svh;display:grid;place-items:center;background:var(--ink);color:var(--paper);font-family:Manrope,Arial,sans-serif;overflow:hidden}.grid{position:fixed;inset:0;opacity:.22;background-image:linear-gradient(rgba(255,255,255,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.1) 1px,transparent 1px);background-size:3rem 3rem}.orb{position:fixed;width:39rem;height:39rem;right:-12rem;top:-18rem;border-radius:50%;background:radial-gradient(circle,rgba(141,128,255,.68),transparent 67%);filter:blur(3px)}main{position:relative;width:min(100% - 2rem,48rem);padding:2rem}.card{padding:clamp(2rem,7vw,5rem);border:1px solid rgba(255,255,255,.17);border-radius:1.7rem;background:rgba(255,255,255,.06);backdrop-filter:blur(15px);box-shadow:0 30px 80px rgba(0,0,0,.28)}.mark{width:3.2rem;height:3.2rem;padding:.55rem;border-radius:1rem;background:var(--lime);color:var(--ink);font-family:Syne;font-size:1.8rem;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 9px rgba(206,244,107,.1)}.eyebrow{margin:2.4rem 0 1rem;font:500 .64rem 'DM Mono',monospace;letter-spacing:.14em;color:#d3d6df}.copy{display:none}.copy.active{display:block}h1{max-width:39rem;margin:0;font:700 clamp(2.7rem,7vw,5.4rem)/.98 Syne,sans-serif;letter-spacing:-.075em}h1 em{font-family:Georgia,serif;font-weight:400;color:var(--lime)}p{max-width:34rem;margin:1.5rem 0 2.4rem;color:#c7cbd5;line-height:1.8;font-size:1rem}.back{display:inline-flex;gap:.7rem;align-items:center;padding:1rem 1.2rem;border-radius:99px;background:var(--coral);color:var(--ink);font-size:.82rem;font-weight:800;text-decoration:none;transition:transform .25s}.back:hover{transform:translateY(-3px)}.language{position:absolute;right:2rem;top:2rem;display:flex;gap:.35rem}.language button{border:1px solid rgba(255,255,255,.2);border-radius:99px;background:transparent;color:#c7cbd5;padding:.38rem .55rem;font:500 .6rem 'DM Mono',monospace;cursor:pointer}.language button.active{background:var(--paper);color:var(--ink)}@media(max-width:560px){.language{position:static;margin-top:2rem}.card{padding:2rem}h1{font-size:2.9rem}}
+  </style>
+</head>
+<body>
+  <div class="grid"></div><div class="orb"></div>
+  <main><section class="card"><div class="mark">F</div><div class="language"><button class="active" data-lang="sk">SK</button><button data-lang="en">EN</button></div>
+    <div class="copy active" data-copy="sk"><div class="eyebrow">FAIRPOINT / SPRÁVA PRIJATÁ</div><h1>Ďakujeme za <em>prvý krok.</em></h1><p>Váš dopyt bol odoslaný do schránky FairPoint. Vráťte sa pokojne na stránku a pozrite si, ako môžeme spolupracovať.</p><a class="back" href="./">Späť na FairPoint&nbsp; →</a></div>
+    <div class="copy" data-copy="en"><div class="eyebrow">FAIRPOINT / MESSAGE RECEIVED</div><h1>Thank you for the <em>first step.</em></h1><p>Your enquiry has been sent to the FairPoint inbox. You can return to the website and explore how we can work together.</p><a class="back" href="./">Back to FairPoint&nbsp; →</a></div>
+  </section></main>
+  <script>const buttons=document.querySelectorAll('[data-lang]'),copies=document.querySelectorAll('[data-copy]');buttons.forEach(button=>button.addEventListener('click',()=>{buttons.forEach(item=>item.classList.toggle('active',item===button));copies.forEach(copy=>copy.classList.toggle('active',copy.dataset.copy===button.dataset.lang));document.documentElement.lang=button.dataset.lang;}));</script>
+</body>
+</html>
